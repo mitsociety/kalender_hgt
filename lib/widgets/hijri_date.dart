@@ -28,6 +28,7 @@ class _HijriKHGTState extends State<HijriKHGT> {
 
   void getTanggal() {
     _khgt = HijriDateConverter();
+    debugPrint(_khgt.iTanggalH.toString());
     
   }
 

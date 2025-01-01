@@ -87,8 +87,9 @@ class HijriDateConverter {
     iBulanH = intPart((24 * l) / 709);
     iTanggalH = l - intPart((709 * iBulanH) / 24);
     
-    final tambahan = 1; // Adjust date, typically -1, 0, +1
-
+    final tambahan = 0; // Adjust date, typically -1, 0, +1
+    //kasus 1 januari 2024 ketika tambahan = 1 tgl jd 2 rajab
+    //pada perhitungan sebelumnya normal
     iTanggalH += tambahan;
     iBulanH -= 1;
     // Adjustments
