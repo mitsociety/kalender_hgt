@@ -132,7 +132,7 @@ class _ImsakiyahState extends State<Imsakiyah> {
           child: Align(
             alignment: Alignment.centerRight,
             child: Text(
-              "Salat Berikutnya:",
+              "Waktu : ",
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
