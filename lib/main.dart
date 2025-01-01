@@ -109,7 +109,7 @@ Widget _leftSideBox(Constraints constraints) {
             flex: 1,
             child: Align(
               alignment: Alignment.bottomCenter,
-              child: Container(color: const Color.fromARGB(255, 254, 255, 254)),
+              child: _leftSideFooter(),
             )
             
           )
@@ -133,6 +133,39 @@ Widget _calendarKHGT() {
         ],
         
       ),
+    );
+  }
+
+  Widget _leftSideFooter(){
+    return Container(
+      color: Colors.green,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Expanded(
+            flex: 1,
+            child: Text("Presented by :",
+            style: TextStyle(
+              fontSize: 9,
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.right,
+            ),
+            ),
+            SizedBox(width: 10,),
+          Expanded(
+            flex: 3,
+            child: Text("MITSociety",
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+            ),)
+            ),
+
+        ],
+      ) 
+      
     );
   }
 

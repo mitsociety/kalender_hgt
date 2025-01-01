@@ -104,9 +104,11 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
               }
             },
           ),
+          const SizedBox(width: 20),
           Text(
             _currentMonth.monthName,
-            style: const TextStyle(fontSize: 18),
+            style: const TextStyle(fontSize: 18,
+            fontWeight: FontWeight.bold,),
           ),
           const SizedBox(width: 20),
           DropdownButton<int>(
@@ -148,29 +150,51 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          ...['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Ahd'].map(_buildWeekDay)
+          ...['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Ahad'].map(_buildWeekDay)
         ],
       ),
     );
   }
 
   Widget _buildWeekDay(String day) {
+    Color txtColor = Colors.black;
+    if(day == "Ahad"){
+      txtColor = Colors.red;
+    }
+    if(day == "Jumat"){
+      txtColor = Colors.green;
+    }
     return Padding(
       padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 8.0),
       child: Text(
         day,
-        style: const TextStyle(fontWeight: FontWeight.bold),
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          color:txtColor,),
       ),
     );
   }
 
   Widget _dayCell(int tgl, String psrn, DateTime masehi) {
+    Color bgColor = Colors.white;
+    Color bdColor = Colors.black;
+    if(tgl == 13|| tgl == 14 || tgl==15){
+      bgColor = Colors.yellowAccent;
+      bdColor = Colors.deepOrange;
+    }
+    if(masehi.weekday == 7){
+      bgColor = Colors.redAccent;
+    }
+    if(masehi.weekday == 5){
+      bgColor = Colors.greenAccent;
+    }
+
     return Container(
       margin: const EdgeInsets.all(2),
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 255, 253, 253),
-        border: Border.all(color: Colors.black),
+        color: bgColor,
+        border: Border.all(color:bdColor),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -180,7 +204,7 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
             child: Align(
               alignment: Alignment.topRight,
               child: Card(
-                color: const Color.fromARGB(255, 255, 254, 254),
+                color: bgColor,
                 elevation: 1,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(4),
@@ -219,10 +243,7 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
     int weekdayOfFirstDay = _currentMonth.startingDate.weekday;
     int totalCells = _currentMonth.daysInMonth + weekdayOfFirstDay - 1;
     String myPsrn = _currentMonth.pasar;
-    debugPrint(hijriMonth.toString());
-    debugPrint(_currentMonth.monthName.toString());
-    debugPrint(myPsrn.toString());
-
+    
     int rows = (totalCells / 7).ceil();
     int itemCount = rows * 7;
 
@@ -256,7 +277,7 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
           Expanded(
             flex: 2,
             child: Text(
-              "Copyleft 1446 acepby All Right Reversed inspired by falakmu.id/khgt",
+              "Copyleft 🄯 1446 acepby All Right Reversed inspired by falakmu.id/khgt",
               textAlign: TextAlign.end,
             ),
           ),

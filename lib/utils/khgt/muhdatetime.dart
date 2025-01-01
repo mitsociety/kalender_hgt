@@ -55,7 +55,9 @@ class MuhDateTime {
     }
     pasar = getPasaran(startingDate.year,startingDate.month, startingDate.day);
   }
-
+  //base cari data konversi tanggal merujuk pada data tahun
+  //offset utk pasaran adalah 1 muharram 1446
+  
   String getPasaran(int yy, int mm,int dd){
     HijriDateConverter myconverter = HijriDateConverter.fromMasehi(dd, mm, yy);
 

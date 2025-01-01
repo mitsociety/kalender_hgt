@@ -4,6 +4,8 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:adhan_dart/adhan_dart.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 class Imsakiyah extends StatefulWidget {
   const Imsakiyah({super.key});
@@ -16,7 +18,7 @@ class _ImsakiyahState extends State<Imsakiyah> {
   late PrayerTimes prayerTimes;
   late DateTime date;
   late Duration selangWaktu;
-  late String salatNext;
+  late String salatNext = "-";
   late String subuh = "-";
   late String dhuhur = "-";
   late String ashar = "-";
@@ -30,7 +32,7 @@ class _ImsakiyahState extends State<Imsakiyah> {
 
   final Map<String, String> namaSalat = {
   "subuh": "Subuh",
-  "dhuhr": "Dhuhr",
+  "dhuhr": "Dhuhur",
   "asr": "Ashar",
   "maghrib": "Maghrib",
   "isha": "Isya",
@@ -40,25 +42,50 @@ class _ImsakiyahState extends State<Imsakiyah> {
   };
 
   Timer? _timer;
+  final TextEditingController _latitudeController = TextEditingController();
+  final TextEditingController _longitudeController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    getWaktuSalat();
+    loadLocation();
   }
 
   @override
   void dispose() {
     _timer?.cancel();
+     _latitudeController.dispose();
+    _longitudeController.dispose();
     super.dispose();
   }
+
+  Future<void> loadLocation() async {
+    final prefs = await SharedPreferences.getInstance();
+    double latitude = prefs.getDouble('latitude') ?? -7.68717650;
+    double longitude = prefs.getDouble('longitude') ?? 110.34345210;
+
+    _latitudeController.text = latitude.toString();
+    _longitudeController.text = longitude.toString();
+
+    getWaktuSalat(); // Calculate prayer times with loaded location
+  }
+
+  Future<void> saveLocation(double latitude, double longitude) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble('latitude', latitude);
+    await prefs.setDouble('longitude', longitude);
+  }
+
 
   void getWaktuSalat() {
     tz.initializeTimeZones();
     final location = tz.getLocation('Asia/Jakarta');
     date = tz.TZDateTime.from(DateTime.now(), location);
 
-    Coordinates coordinates = Coordinates(-7.68717650, 110.34345210); //todo : set to user location
+    double latitude = double.tryParse(_latitudeController.text) ?? -7.68717650;
+    double longitude = double.tryParse(_longitudeController.text) ?? 110.34345210;
+
+    Coordinates coordinates = Coordinates(latitude, longitude); 
     CalculationParameters params = CalculationMethod.karachi();
     params.madhab = Madhab.shafi;
 
@@ -189,8 +216,18 @@ class _ImsakiyahState extends State<Imsakiyah> {
               style: TextStyle(fontSize: 22, color: Colors.white),
             ),
           ),
+          Align(
+            alignment: Alignment.center,
+            child: ElevatedButton(
+            onPressed: (){
+              showLocationDialog();
+            }, 
+            child: const Text("Atur Lokasi")
+            ),
+          ),
+          
           buildPrayerTime("Subuh", subuh),
-          buildPrayerTime("Dhuhr", dhuhur),
+          buildPrayerTime("Dhuhur", dhuhur),
           buildPrayerTime("Ashar", ashar),
           buildPrayerTime("Maghrib", maghrib),
           buildPrayerTime("Isya", isya),
@@ -211,4 +248,58 @@ class _ImsakiyahState extends State<Imsakiyah> {
       ),
     );
   }
+
+void showLocationDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          title: const Text("Atur Lokasi"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: _latitudeController,
+                decoration: const InputDecoration(
+                  labelText: "Latitude",
+                  border: OutlineInputBorder(),
+                ),
+                keyboardType: TextInputType.number,
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _longitudeController,
+                decoration: const InputDecoration(
+                  labelText: "Longitude",
+                  border: OutlineInputBorder(),
+                ),
+                keyboardType: TextInputType.number,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close the dialog
+              },
+              child: const Text("Batal"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                double latitude = double.tryParse(_latitudeController.text) ?? -7.68717650;
+                double longitude = double.tryParse(_longitudeController.text) ?? 110.34345210;
+
+                saveLocation(latitude, longitude); // Save location to SharedPreferences
+                Navigator.pop(context); // Close the dialog
+                getWaktuSalat(); // Update prayer times
+              },
+              child: const Text("Update"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 }
