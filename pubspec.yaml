@@ -37,6 +37,7 @@ dependencies:
   adhan_dart: ^1.1.2
   timezone: ^0.10.0
   intl: ^0.20.1
+  hijriyah_khgt: ^0.1.8
 
 dev_dependencies:
   flutter_test:

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:khgt/utils/khgt/hijriconverter.dart';
 import 'package:intl/intl.dart';
 import 'package:khgt/utils/khgt/khgt_dat.dart';
 import 'dart:async';
-import 'package:khgt/utils/khgt/muhdatetime.dart';
+import 'package:hijriyah_khgt/hijriyah_khgt.dart';
 
 class CalendarKHGT extends StatefulWidget {
   const CalendarKHGT({super.key});
@@ -13,7 +12,8 @@ class CalendarKHGT extends StatefulWidget {
 }
 
 class _CalendarKHGTState extends State<CalendarKHGT> {
-  late MuhDateTime _currentMonth;
+  //late MuhDateTime _currentMonth;
+  late Hijriyah _currentMonth;
   //late String pasaran = '-';
   late Timer? _timer;
   final PageController _pageController = PageController(initialPage: DateTime.now().month - 1);
@@ -35,17 +35,17 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
 
   void initializeCalendar() {
     setState(() {
-      HijriDateConverter khgt = HijriDateConverter();
-      debugPrint(khgt.sPasaran);
-      _currentMonth = MuhDateTime(hijriYear: khgt.iTahunH, iMonth: khgt.iBulanH, iDay: 1);
-      selectedYear = _currentMonth.hijriYear;
-      debugPrint(_currentMonth.pasar);
+      Hijriyah khgt = Hijriyah.now();
+      //debugPrint(khgt.sPasaran);
+      _currentMonth = Hijriyah.hijri(khgt.hYear, khgt.hMonth, 1);
+      selectedYear = _currentMonth.hYear;
+      //debugPrint(_currentMonth.nmPasaran);
       //pasaran = _currentMonth.pasaran;
     });
   }
-
+  
   String getPasaranOffset(int startIndex, String psrOffset) {
-    List<String> psrn = HijriDateConverter.namaPasaran;
+    List<String> psrn = ['Kliwon', 'Legi', 'Pahing', 'Pon', 'Wage'];
     int offset = psrn.indexOf(psrOffset);
     if (offset == -1) {
       throw ArgumentError("Invalid pasaran offset value: $psrOffset");
@@ -53,6 +53,11 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
     return psrn[(startIndex + offset) % psrn.length];
   }
 
+  DateTime getMasehi(int hYear, int hMonth, int hDay) {
+    final DateTime masehi = Hijriyah().hijriToGregorian(hYear, hMonth, hDay);
+    return masehi;
+  }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -66,11 +71,12 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
             controller: _pageController,
             onPageChanged: (index) {
               setState(() {
-                _currentMonth = MuhDateTime(
+                _currentMonth = Hijriyah.hijri(selectedYear, index + 1, 1);
+                /*MuhDateTime(
                   hijriYear: selectedYear,
                   iMonth: index,
                   iDay: 1,
-                );
+                );*/
                 //pasaran = _currentMonth.pasaran;
               });
             },
@@ -105,7 +111,7 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
             },
           ),
           Text(
-            _currentMonth.monthName,
+            _currentMonth.longMonthName,
             style: const TextStyle(fontSize: 18),
           ),
           const SizedBox(width: 20),
@@ -148,7 +154,7 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          ...['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Ahd'].map(_buildWeekDay)
+          ...['Ahad','Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu' ].map(_buildWeekDay)
         ],
       ),
     );
@@ -216,12 +222,16 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
   }
 
   Widget _calGrid(int hijriMonth, int yearCh) {
-    int weekdayOfFirstDay = _currentMonth.startingDate.weekday;
-    int totalCells = _currentMonth.daysInMonth + weekdayOfFirstDay - 1;
-    String myPsrn = _currentMonth.pasar;
-    debugPrint(hijriMonth.toString());
-    debugPrint(_currentMonth.monthName.toString());
-    debugPrint(myPsrn.toString());
+    int weekdayOfFirstDay = _currentMonth.wkDay;
+    if (weekdayOfFirstDay == 7) {
+      weekdayOfFirstDay = 0;
+    }
+    
+    int totalCells = _currentMonth.lengthOfMonth + weekdayOfFirstDay ;
+    String myPsrn = _currentMonth.nmPasaran;
+    //debugPrint(hijriMonth.toString());
+    //debugPrint(_currentMonth.monthName.toString());
+    //debugPrint(weekdayOfFirstDay.toString());
 
     int rows = (totalCells / 7).ceil();
     int itemCount = rows * 7;
@@ -230,17 +240,17 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 7,
-        childAspectRatio: 1.6,
+        childAspectRatio: 3/2,
       ),
       itemCount: itemCount,
       itemBuilder: (context, index) {
-        if (index < weekdayOfFirstDay - 1 || index >= _currentMonth.daysInMonth + weekdayOfFirstDay - 1) {
+        if (index < weekdayOfFirstDay || index >= _currentMonth.lengthOfMonth + weekdayOfFirstDay ) {
           return const SizedBox.shrink();
         }
         return _dayCell(
-          index - weekdayOfFirstDay + 2,
-          getPasaranOffset(index - weekdayOfFirstDay + 1, myPsrn),
-          _currentMonth.startingDate.add(Duration(days: index - weekdayOfFirstDay + 1)),
+          index - weekdayOfFirstDay + 1,
+          getPasaranOffset(index - weekdayOfFirstDay, myPsrn),
+          getMasehi(_currentMonth.hYear,_currentMonth.hMonth,_currentMonth.hDay).add(Duration(days: index - weekdayOfFirstDay)),
         );
       },
     );

@@ -1,6 +1,7 @@
 import "package:intl/intl.dart";
 import "package:khgt/utils/khgt/hijriconverter.dart";
 import "package:khgt/utils/khgt/khgt_dat.dart";
+//import 'package:hijriyah_khgt/hijriyah_khgt.dart';
 
 class MuhDateTime {
   int hijriYear;
@@ -56,6 +57,8 @@ class MuhDateTime {
     pasar = getPasaran(startingDate.year,startingDate.month, startingDate.day);
   }
 
+ 
+  
   String getPasaran(int yy, int mm,int dd){
     HijriDateConverter myconverter = HijriDateConverter.fromMasehi(dd, mm, yy);
 
