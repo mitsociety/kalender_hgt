@@ -1,0 +1,34 @@
+display_name: KHGT Calendar
+package_name: khgt
+
+maintainer:
+  name: Adi Sucipto
+  email: acepby@gmail.com
+
+priority: optional
+
+section: x11
+
+installed_size: 15700
+
+dependencies:
+  
+
+essential: false
+
+icon: linux/assets/khgt.png
+
+postuninstall_scripts:
+  - echo "Sorry to see you go."
+
+keywords:
+  - Hijri
+  - Hijri KHGT
+
+generic_name: Calendar KHGT
+
+categories:
+  - Development
+  - Utility
+
+startup_notify: true

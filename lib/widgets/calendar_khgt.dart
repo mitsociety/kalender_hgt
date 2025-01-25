@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:khgt/utils/khgt/hijriconverter.dart';
 import 'package:intl/intl.dart';
-import 'package:khgt/utils/khgt/khgt_dat.dart';
 import 'dart:async';
-import 'package:khgt/utils/khgt/muhdatetime.dart';
+import 'package:hijriyah_khgt/hijriyah_khgt.dart';
 
 class CalendarKHGT extends StatefulWidget {
   const CalendarKHGT({super.key});
@@ -13,7 +11,8 @@ class CalendarKHGT extends StatefulWidget {
 }
 
 class _CalendarKHGTState extends State<CalendarKHGT> {
-  late MuhDateTime _currentMonth;
+  //late MuhDateTime _currentMonth;
+  late Hijriyah _currentMonth;
   //late String pasaran = '-';
   late Timer? _timer;
   final PageController _pageController = PageController(initialPage: DateTime.now().month - 1);
@@ -35,17 +34,17 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
 
   void initializeCalendar() {
     setState(() {
-      HijriDateConverter khgt = HijriDateConverter();
-      debugPrint(khgt.sPasaran);
-      _currentMonth = MuhDateTime(hijriYear: khgt.iTahunH, iMonth: khgt.iBulanH, iDay: 1);
-      selectedYear = _currentMonth.hijriYear;
-      debugPrint(_currentMonth.pasar);
+      Hijriyah khgt = Hijriyah.now();
+      //debugPrint(khgt.sPasaran);
+       _currentMonth = Hijriyah.hijri(khgt.hYear, khgt.hMonth, 1);
+      selectedYear = _currentMonth.hYear;
+      //debugPrint(skrg.iDay.toString());
       //pasaran = _currentMonth.pasaran;
     });
   }
 
   String getPasaranOffset(int startIndex, String psrOffset) {
-    List<String> psrn = HijriDateConverter.namaPasaran;
+    List<String> psrn =  ['Kliwon', 'Legi', 'Pahing', 'Pon', 'Wage'];
     int offset = psrn.indexOf(psrOffset);
     if (offset == -1) {
       throw ArgumentError("Invalid pasaran offset value: $psrOffset");
@@ -53,6 +52,10 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
     return psrn[(startIndex + offset) % psrn.length];
   }
 
+  DateTime getMasehi(int hYear, int hMonth, int hDay) {
+    final DateTime masehi = Hijriyah().hijriToGregorian(hYear, hMonth, hDay);
+    return masehi;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,11 +69,7 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
             controller: _pageController,
             onPageChanged: (index) {
               setState(() {
-                _currentMonth = MuhDateTime(
-                  hijriYear: selectedYear,
-                  iMonth: index,
-                  iDay: 1,
-                );
+                _currentMonth = Hijriyah.hijri(selectedYear, index + 1, 1);
                 //pasaran = _currentMonth.pasaran;
               });
             },
@@ -87,7 +86,7 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
   }
 
   Widget _buildHeader() {
-    final List<int> years = data.keys.toList();
+    final List<int> years =  [for (var i = 1446; i <= 1468; i++) i];//data.keys.toList();
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
@@ -106,7 +105,7 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
           ),
           const SizedBox(width: 20),
           Text(
-            _currentMonth.monthName,
+            _currentMonth.longMonthName,
             style: const TextStyle(fontSize: 18,
             fontWeight: FontWeight.bold,),
           ),
@@ -135,10 +134,7 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
               );
             },
           ),
-          Text(
-            'Year: $selectedYear',
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
+          
         ],
       ),
     );
@@ -150,7 +146,7 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          ...['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Ahad'].map(_buildWeekDay)
+          ...['Ahad','Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu' ].map(_buildWeekDay)
         ],
       ),
     );
@@ -178,6 +174,12 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
   Widget _dayCell(int tgl, String psrn, DateTime masehi) {
     Color bgColor = Colors.white;
     Color bdColor = Colors.black;
+    final now = DateTime.now();
+    final today = DateTime(now.year,now.month,now.day);
+    final msh = DateTime(masehi.year,masehi.month,masehi.day);
+    if(msh == today){
+      bgColor = Colors.blueAccent;
+    }
     if(tgl == 13|| tgl == 14 || tgl==15){
       bgColor = Colors.yellowAccent;
       bdColor = Colors.deepOrange;
@@ -188,6 +190,7 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
     if(masehi.weekday == 5){
       bgColor = Colors.greenAccent;
     }
+    
 
     return Container(
       margin: const EdgeInsets.all(2),
@@ -240,9 +243,12 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
   }
 
   Widget _calGrid(int hijriMonth, int yearCh) {
-    int weekdayOfFirstDay = _currentMonth.startingDate.weekday;
-    int totalCells = _currentMonth.daysInMonth + weekdayOfFirstDay - 1;
-    String myPsrn = _currentMonth.pasar;
+    int weekdayOfFirstDay = _currentMonth.wkDay;
+     if (weekdayOfFirstDay == 7) {
+      weekdayOfFirstDay = 0;
+    }
+    int totalCells = _currentMonth.lengthOfMonth + weekdayOfFirstDay ;
+    String myPsrn = _currentMonth.nmPasaran;
     
     int rows = (totalCells / 7).ceil();
     int itemCount = rows * 7;
@@ -255,13 +261,13 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
       ),
       itemCount: itemCount,
       itemBuilder: (context, index) {
-        if (index < weekdayOfFirstDay - 1 || index >= _currentMonth.daysInMonth + weekdayOfFirstDay - 1) {
+        if (index < weekdayOfFirstDay || index >= _currentMonth.lengthOfMonth + weekdayOfFirstDay ) {
           return const SizedBox.shrink();
         }
         return _dayCell(
-          index - weekdayOfFirstDay + 2,
-          getPasaranOffset(index - weekdayOfFirstDay + 1, myPsrn),
-          _currentMonth.startingDate.add(Duration(days: index - weekdayOfFirstDay + 1)),
+          index - weekdayOfFirstDay + 1,
+          getPasaranOffset(index - weekdayOfFirstDay, myPsrn),
+          getMasehi(_currentMonth.hYear,_currentMonth.hMonth,_currentMonth.hDay).add(Duration(days: index - weekdayOfFirstDay)),
         );
       },
     );

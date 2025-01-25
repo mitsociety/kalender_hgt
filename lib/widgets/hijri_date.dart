@@ -1,6 +1,9 @@
 import "package:flutter/material.dart";
-import "package:khgt/utils/khgt/hijriconverter.dart";
 import "dart:async";
+import 'package:hijriyah_khgt/hijriyah_khgt.dart';
+import 'package:hijriyah_khgt/exstensions/word_extension.dart';
+import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 class HijriKHGT extends StatefulWidget {
   const HijriKHGT({super.key});
@@ -10,12 +13,13 @@ class HijriKHGT extends StatefulWidget {
 }
 
 class _HijriKHGTState extends State<HijriKHGT> {
-  late HijriDateConverter _khgt;
+  late Hijriyah _khgt;
   Timer? _timer;
 
   @override
   void initState() {
     super.initState();
+    initializeDateFormatting('id_ID',null);
     getTanggal();
     startPeriodicUpdate();
   }
@@ -27,8 +31,8 @@ class _HijriKHGTState extends State<HijriKHGT> {
   }
 
   void getTanggal() {
-    _khgt = HijriDateConverter();
-    debugPrint(_khgt.iTanggalH.toString());
+    _khgt = Hijriyah.now();
+    
     
   }
 
@@ -60,7 +64,7 @@ class _HijriKHGTState extends State<HijriKHGT> {
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  _khgt.sPasaran,
+                  "${_khgt.dayWeName.toTitleCase()} ${_khgt.nmPasaran}",
                   style: const TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
@@ -73,7 +77,7 @@ class _HijriKHGTState extends State<HijriKHGT> {
             Expanded(
               flex: 7,
               child: Text(
-                _khgt.iTanggalH.toString(),
+                _khgt.hDay.toString(),
                 style: const TextStyle(
                   fontSize: 100,
                   fontWeight: FontWeight.bold,
@@ -85,7 +89,7 @@ class _HijriKHGTState extends State<HijriKHGT> {
             Expanded(
               flex: 1,
               child: Text(
-                "${_khgt.sBulanH} ${_khgt.iTahunH} H",
+                "${_khgt.longMonthName} ${_khgt.hYear} H",
                 style: const TextStyle(
                   fontSize: 16,
                   color: Colors.white,
@@ -96,7 +100,7 @@ class _HijriKHGTState extends State<HijriKHGT> {
             Expanded(
               flex: 1,
               child: Text(
-                "[ ${_khgt.iTanggalM} ${HijriDateConverter.namaBulanE[_khgt.iBulanM]} ${_khgt.iTahunM} ]",
+                "[ ${DateFormat.yMMMMEEEEd('id_ID').format(DateTime.now())} ]",
                 style: const TextStyle(
                   fontSize: 12,
                   color: Colors.white,

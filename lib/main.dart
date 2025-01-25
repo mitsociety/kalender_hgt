@@ -138,13 +138,13 @@ Widget _calendarKHGT() {
 
   Widget _leftSideFooter(){
     return Container(
-      color: Colors.green,
+      color: Colors.deepOrange,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Expanded(
-            flex: 1,
+            
             child: Text("Presented by :",
             style: TextStyle(
               fontSize: 9,
@@ -155,7 +155,7 @@ Widget _calendarKHGT() {
             ),
             SizedBox(width: 10,),
           Expanded(
-            flex: 3,
+            
             child: Text("MITSociety",
             style: TextStyle(
               fontSize: 10,
