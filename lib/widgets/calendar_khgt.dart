@@ -212,11 +212,14 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(4),
                 ),
-                child: Text(
-                  DateFormat('dd/MM/yy').format(masehi),
-                  style: const TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w800,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    DateFormat('dd/MM/yy').format(masehi),
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                 ),
               ),
@@ -224,18 +227,27 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
           ),
           Expanded(
             flex: 1,
-            child: Text(
-              "$tgl",
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Color.fromARGB(255, 0, 0, 0),
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                "$tgl",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 0, 0, 0)
+                ),
               ),
             ),
           ),
           Expanded(
             flex: 1,
-            child: Text(psrn),
+            // child: Text(psrn),
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                psrn
+              ),
+            ),
           ),
         ],
       ),
