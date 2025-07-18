@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:timezone/timezone.dart' as tz;
-import 'package:timezone/data/latest.dart' as tz;
 import 'package:adhan_dart/adhan_dart.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
@@ -31,14 +30,14 @@ class _ImsakiyahState extends State<Imsakiyah> {
   ];
 
   final Map<String, String> namaSalat = {
-  "subuh": "Subuh",
+  "fajr": "Subuh",
   "dhuhr": "Dhuhur",
   "asr": "Ashar",
   "maghrib": "Maghrib",
   "isha": "Isya",
+  "sunrise": "Terbit",
   "fajrafter": "Subuh",
   "ishabefore": "Isya",
-  "sunrise": "Terbit",
   };
 
   Timer? _timer;
@@ -60,6 +59,7 @@ class _ImsakiyahState extends State<Imsakiyah> {
   }
 
   Future<void> loadLocation() async {
+  try {
     final prefs = await SharedPreferences.getInstance();
     double latitude = prefs.getDouble('latitude') ?? -7.68717650;
     double longitude = prefs.getDouble('longitude') ?? 110.34345210;
@@ -68,7 +68,17 @@ class _ImsakiyahState extends State<Imsakiyah> {
     _longitudeController.text = longitude.toString();
 
     getWaktuSalat(); // Calculate prayer times with loaded location
+  } catch (e) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Gagal memuat lokasi: $e"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
+}
 
   Future<void> saveLocation(double latitude, double longitude) async {
     final prefs = await SharedPreferences.getInstance();
@@ -78,12 +88,17 @@ class _ImsakiyahState extends State<Imsakiyah> {
 
 
   void getWaktuSalat() {
-    tz.initializeTimeZones();
+  try {
+    
     final location = tz.getLocation('Asia/Jakarta');
+    
+
     date = tz.TZDateTime.from(DateTime.now(), location);
 
     double latitude = double.tryParse(_latitudeController.text) ?? -7.68717650;
     double longitude = double.tryParse(_longitudeController.text) ?? 110.34345210;
+
+    
 
     Coordinates coordinates = Coordinates(latitude, longitude); 
     CalculationParameters params = CalculationMethod.karachi();
@@ -95,6 +110,8 @@ class _ImsakiyahState extends State<Imsakiyah> {
       calculationParameters: params,
       precision: true,
     );
+
+    
 
     setState(() {
       salatNext = prayerTimes.nextPrayer(date: date) ?? "fajr";
@@ -112,7 +129,22 @@ class _ImsakiyahState extends State<Imsakiyah> {
       _timer?.cancel();
       _timer = Timer(selangWaktu, getWaktuSalat);
     });
+  } catch (e) {
+    
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Gagal menghitung waktu salat: $e"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+    setState(() {
+      subuh = dhuhur = ashar = maghrib = isya = "-";
+      salatNext = "-";
+    });
   }
+}
 
   String formatTime(DateTime? time, tz.Location location) {
     if (time == null) return "-";
@@ -250,56 +282,68 @@ class _ImsakiyahState extends State<Imsakiyah> {
   }
 
 void showLocationDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          title: const Text("Atur Lokasi"),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: _latitudeController,
-                decoration: const InputDecoration(
-                  labelText: "Latitude",
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.number,
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        title: const Text("Atur Lokasi"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: _latitudeController,
+              decoration: const InputDecoration(
+                labelText: "Latitude",
+                border: OutlineInputBorder(),
               ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: _longitudeController,
-                decoration: const InputDecoration(
-                  labelText: "Longitude",
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.number,
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context); // Close the dialog
-              },
-              child: const Text("Batal"),
+              keyboardType: TextInputType.number,
             ),
-            ElevatedButton(
-              onPressed: () {
-                double latitude = double.tryParse(_latitudeController.text) ?? -7.68717650;
-                double longitude = double.tryParse(_longitudeController.text) ?? 110.34345210;
-
-                saveLocation(latitude, longitude); // Save location to SharedPreferences
-                Navigator.pop(context); // Close the dialog
-                getWaktuSalat(); // Update prayer times
-              },
-              child: const Text("Update"),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _longitudeController,
+              decoration: const InputDecoration(
+                labelText: "Longitude",
+                border: OutlineInputBorder(),
+              ),
+              keyboardType: TextInputType.number,
             ),
           ],
-        );
-      },
-    );
-  }
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // Close the dialog
+            },
+            child: const Text("Batal"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              double? latitude = double.tryParse(_latitudeController.text);
+              double? longitude = double.tryParse(_longitudeController.text);
+
+              if (latitude == null || longitude == null ||
+                  latitude < -90 || latitude > 90 ||
+                  longitude < -180 || longitude > 180) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Lokasi tidak valid. Mohon masukkan koordinat yang benar."),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+                return;
+              }
+
+              saveLocation(latitude, longitude); // Save location to SharedPreferences
+              Navigator.pop(context); // Close the dialog
+              getWaktuSalat(); // Update prayer times
+            },
+            child: const Text("Update"),
+          ),
+        ],
+      );
+    },
+  );
+}
 
 }

@@ -86,3 +86,5 @@ add_custom_target(flutter_assemble DEPENDS
   "${FLUTTER_LIBRARY}"
   ${FLUTTER_LIBRARY_HEADERS}
 )
+
+set(FLUTTER_APPLICATION_ICON "${CMAKE_CURRENT_SOURCE_DIR}/assets/app_icon.png")

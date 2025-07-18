@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:khgt/widgets/hijri_date.dart';
 import 'package:khgt/widgets/imsakiyah.dart';
 import "package:khgt/widgets/calendar_khgt.dart";
+import 'package:timezone/data/latest.dart' as tz;
 
 void main() {
+  tz.initializeTimeZones();
   runApp(const MyApp());
 }
 
@@ -143,30 +145,29 @@ Widget _calendarKHGT() {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(
-            
-            child: Text("Presented by :",
-            style: TextStyle(
-              fontSize: 9,
-              fontWeight: FontWeight.bold,
+            child: Text(
+              "Presented by :",
+              style: TextStyle(
+                fontSize: 14, // Increased from 9
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.right,
             ),
-            textAlign: TextAlign.right,
-            ),
-            ),
-            SizedBox(width: 10,),
+          ),
+          SizedBox(width: 10,),
           Expanded(
-            
-            child: Text("MITSociety",
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.bold,
-            ),)
+            child: Text(
+              "MITSociety",
+              style: TextStyle(
+                fontSize: 16, // Increased from 10
+                fontWeight: FontWeight.bold,
+              ),
             ),
-
+          ),
         ],
       ) 
-      
-    );
-  }
+  );
+}
 
   
 }

@@ -19,9 +19,9 @@ class _HijriKHGTState extends State<HijriKHGT> {
   @override
   void initState() {
     super.initState();
-    initializeDateFormatting('id_ID',null);
+    initializeDateFormatting('id_ID', null);
     getTanggal();
-    startPeriodicUpdate();
+    scheduleMidnightUpdate();
   }
 
   @override
@@ -31,21 +31,35 @@ class _HijriKHGTState extends State<HijriKHGT> {
   }
 
   void getTanggal() {
-    _khgt = Hijriyah.now();
-    
-    
+    try {
+      _khgt = Hijriyah.now();
+    } catch (e) {
+      // fallback if Hijriyah.now() fails
+      _khgt = Hijriyah.hijri(1447, 1, 1);
+    }
   }
 
-  void startPeriodicUpdate() {
-    _timer = Timer.periodic(const Duration(hours: 24), (timer) {
+  void scheduleMidnightUpdate() {
+    final now = DateTime.now();
+    final nextMidnight = DateTime(now.year, now.month, now.day + 1);
+    final durationToMidnight = nextMidnight.difference(now);
+
+    _timer = Timer(durationToMidnight, () {
       setState(() {
         getTanggal();
       });
+      // Schedule next midnight update
+      scheduleMidnightUpdate();
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    // Responsive font sizes
+    final dayFontSize = screenWidth < 400 ? 60.0 : 100.0;
+    final headerFontSize = screenWidth < 400 ? 20.0 : 32.0;
+
     return Card(
       elevation: 4.0,
       clipBehavior: Clip.antiAlias,
@@ -65,12 +79,13 @@ class _HijriKHGTState extends State<HijriKHGT> {
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   "${_khgt.dayWeName.toTitleCase()} ${_khgt.nmPasaran}",
-                  style: const TextStyle(
-                    fontSize: 32,
+                  style: TextStyle(
+                    fontSize: headerFontSize,
                     fontWeight: FontWeight.bold,
                     color: Colors.yellowAccent,
                   ),
                   textAlign: TextAlign.center,
+                  semanticsLabel: "Hari dan pasaran Hijriyah",
                 ),
               ),
             ),
@@ -78,12 +93,13 @@ class _HijriKHGTState extends State<HijriKHGT> {
               flex: 7,
               child: Text(
                 _khgt.hDay.toString(),
-                style: const TextStyle(
-                  fontSize: 100,
+                style: TextStyle(
+                  fontSize: dayFontSize,
                   fontWeight: FontWeight.bold,
                   color: Colors.yellowAccent,
                 ),
                 textAlign: TextAlign.center,
+                semanticsLabel: "Tanggal Hijriyah",
               ),
             ),
             Expanded(
@@ -95,6 +111,7 @@ class _HijriKHGTState extends State<HijriKHGT> {
                   color: Colors.white,
                 ),
                 textAlign: TextAlign.center,
+                semanticsLabel: "Bulan dan tahun Hijriyah",
               ),
             ),
             Expanded(
@@ -106,6 +123,7 @@ class _HijriKHGTState extends State<HijriKHGT> {
                   color: Colors.white,
                 ),
                 textAlign: TextAlign.center,
+                semanticsLabel: "Tanggal Masehi",
               ),
             ),
           ],
