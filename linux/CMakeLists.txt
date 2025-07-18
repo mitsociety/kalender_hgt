@@ -7,7 +7,9 @@ project(runner LANGUAGES CXX)
 set(BINARY_NAME "khgt")
 # The unique GTK application identifier for this application. See:
 # https://wiki.gnome.org/HowDoI/ChooseApplicationID
-set(APPLICATION_ID "id.mitsociety.KHGT")
+set(APPLICATION_ID "KHGT")
+set(APPLICATION_NAME "KHGT")
+set(FLUTTER_APPLICATION_ICON "${CMAKE_CURRENT_SOURCE_DIR}/assets/khgt.png")
 
 # Explicitly opt in to modern CMake behaviors to avoid warnings with recent
 # versions of CMake.
@@ -126,3 +128,6 @@ if(NOT CMAKE_BUILD_TYPE MATCHES "Debug")
   install(FILES "${AOT_LIBRARY}" DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
     COMPONENT Runtime)
 endif()
+
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/khgt.desktop"
+        DESTINATION ".")

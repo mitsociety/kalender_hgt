@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=KHGT
+Comment=Kalender Hijriyah Global Tunggal
+Exec=KHGT
+Icon=khgt
+Terminal=false
+Type=Application
+Categories=Utility;
