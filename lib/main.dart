@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:khgt/widgets/hijri_date.dart';
 import 'package:khgt/widgets/imsakiyah.dart';
 import "package:khgt/widgets/calendar_khgt.dart";
@@ -91,7 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
 //left side widget
-Widget _leftSideBox(Constraints constraints) {
+Widget _leftSideBox(BoxConstraints constraints) {
     return Container(
       color: Colors.green,
       child: Column(
@@ -141,7 +140,7 @@ Widget _calendarKHGT() {
       color: Colors.deepOrange,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(
             

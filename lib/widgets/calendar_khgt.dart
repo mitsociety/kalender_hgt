@@ -94,14 +94,14 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
         children: [
           IconButton(
             icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              if (_pageController.page! > 0) {
-                _pageController.previousPage(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeOut,
-                );
-              }
-            },
+            onPressed: (_pageController.hasClients && _pageController.page! > 0)
+                ? () {
+                    _pageController.previousPage(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeOut,
+                    );
+                  }
+                : null, // Disable if at first page
           ),
           const SizedBox(width: 20),
           Text(
@@ -121,18 +121,23 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
             onChanged: (int? newValue) {
               setState(() {
                 selectedYear = newValue ?? selectedYear;
+                // Reset to Muharram (month 1) when year changes
+                _currentMonth = Hijriyah.hijri(selectedYear, 1, 1);
+                _pageController.jumpToPage(0);
               });
             },
           ),
           const SizedBox(width: 20),
           IconButton(
             icon: const Icon(Icons.arrow_forward),
-            onPressed: () {
-              _pageController.nextPage(
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-              );
-            },
+            onPressed: (_pageController.hasClients && _pageController.page! < (12 * 23 - 1))
+                ? () {
+                    _pageController.nextPage(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
+                  }
+                : null, // Disable if at last page
           ),
           
         ],
