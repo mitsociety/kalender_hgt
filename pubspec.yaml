@@ -50,6 +50,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+  inno_bundle: ^0.9.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -92,3 +93,11 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+inno_bundle:
+  id: 3eac27eb-f118-5f1b-a80c-3d9c0ea9b552
+  publisher: MitSociety 
+  name: Kalender KHGT # Also optional, but recommended.
+  languages:
+    - english
+    
