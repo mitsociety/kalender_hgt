@@ -35,10 +35,15 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
   void initializeCalendar() {
     setState(() {
       Hijriyah khgt = Hijriyah.now();
-      //debugPrint(khgt.sPasaran);
-       _currentMonth = Hijriyah.hijri(khgt.hYear, khgt.hMonth, 1);
+      debugPrint("tahun : ${khgt.hYear}, bulan : ${khgt.hMonth}, tanggal : ${khgt.hDay}");
+      // Get the Gregorian date for the first of current Hijri month
+      DateTime firstOfMonth = khgt.hijriToGregorian(khgt.hYear, khgt.hMonth, 1);
+      debugPrint("First of month (Gregorian): ${firstOfMonth.toIso8601String()}");
+      
+      // Create new Hijri object from that Gregorian date
+      _currentMonth = Hijriyah.fromDate(firstOfMonth);
       selectedYear = _currentMonth.hYear;
-      //debugPrint(skrg.iDay.toString());
+      debugPrint("selectedYear: ${selectedYear.toString()}");
       //pasaran = _currentMonth.pasaran;
     });
   }
@@ -86,7 +91,7 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
   }
 
   Widget _buildHeader() {
-    final List<int> years =  [for (var i = 1446; i <= 1468; i++) i];//data.keys.toList();
+    final List<int> years =  [for (var i = 1447; i <= 1494; i++) i];//data.keys.toList();
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(

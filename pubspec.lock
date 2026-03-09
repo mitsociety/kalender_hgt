@@ -132,10 +132,10 @@ packages:
     dependency: "direct main"
     description:
       name: hijriyah_khgt
-      sha256: d16f687f59d018d5f89ed4e29b13a005c5dc884ea23acefaddeb9974c06327ba
+      sha256: edc0ba89570d59dbf05615e70c3c86ade3b2aeeef74c32381c4849ab6190bf97
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.8"
+    version: "0.1.93"
   http:
     dependency: transitive
     description:

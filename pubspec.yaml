@@ -38,7 +38,7 @@ dependencies:
   timezone: ^0.10.0
   intl: ^0.20.1
   shared_preferences: ^2.0.0
-  hijriyah_khgt: ^0.1.8
+  hijriyah_khgt: 0.1.93
 
 dev_dependencies:
   flutter_test:
