@@ -15,14 +15,16 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
   late Hijriyah _currentMonth;
   //late String pasaran = '-';
   late Timer? _timer;
-  final PageController _pageController = PageController(initialPage: DateTime.now().month - 1);
+  final PageController _pageController =
+      PageController(initialPage: DateTime.now().month - 1);
   late int selectedYear;
 
   @override
   void initState() {
     super.initState();
     initializeCalendar();
-    _timer = Timer.periodic(const Duration(hours: 24), (_) => initializeCalendar());
+    _timer =
+        Timer.periodic(const Duration(hours: 24), (_) => initializeCalendar());
   }
 
   @override
@@ -35,11 +37,13 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
   void initializeCalendar() {
     setState(() {
       Hijriyah khgt = Hijriyah.now();
-      debugPrint("tahun : ${khgt.hYear}, bulan : ${khgt.hMonth}, tanggal : ${khgt.hDay}");
+      debugPrint(
+          "tahun : ${khgt.hYear}, bulan : ${khgt.hMonth}, tanggal : ${khgt.hDay}");
       // Get the Gregorian date for the first of current Hijri month
       DateTime firstOfMonth = khgt.hijriToGregorian(khgt.hYear, khgt.hMonth, 1);
-      debugPrint("First of month (Gregorian): ${firstOfMonth.toIso8601String()}");
-      
+      debugPrint(
+          "First of month (Gregorian): ${firstOfMonth.toIso8601String()}");
+
       // Create new Hijri object from that Gregorian date
       _currentMonth = Hijriyah.fromDate(firstOfMonth);
       selectedYear = _currentMonth.hYear;
@@ -49,7 +53,7 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
   }
 
   String getPasaranOffset(int startIndex, String psrOffset) {
-    List<String> psrn =  ['Kliwon', 'Legi', 'Pahing', 'Pon', 'Wage'];
+    List<String> psrn = ['Kliwon', 'Legi', 'Pahing', 'Pon', 'Wage'];
     int offset = psrn.indexOf(psrOffset);
     if (offset == -1) {
       throw ArgumentError("Invalid pasaran offset value: $psrOffset");
@@ -91,7 +95,9 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
   }
 
   Widget _buildHeader() {
-    final List<int> years =  [for (var i = 1447; i <= 1494; i++) i];//data.keys.toList();
+    final List<int> years = [
+      for (var i = 1447; i <= 1494; i++) i
+    ]; //data.keys.toList();
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
@@ -111,8 +117,10 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
           const SizedBox(width: 20),
           Text(
             _currentMonth.longMonthName,
-            style: const TextStyle(fontSize: 18,
-            fontWeight: FontWeight.bold,),
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(width: 20),
           DropdownButton<int>(
@@ -135,7 +143,8 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
           const SizedBox(width: 20),
           IconButton(
             icon: const Icon(Icons.arrow_forward),
-            onPressed: (_pageController.hasClients && _pageController.page! < (12 * 23 - 1))
+            onPressed: (_pageController.hasClients &&
+                    _pageController.page! < (12 * 23 - 1))
                 ? () {
                     _pageController.nextPage(
                       duration: const Duration(milliseconds: 300),
@@ -144,7 +153,6 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
                   }
                 : null, // Disable if at last page
           ),
-          
         ],
       ),
     );
@@ -156,7 +164,8 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          ...['Ahad','Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu' ].map(_buildWeekDay)
+          ...['Ahad', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']
+              .map(_buildWeekDay)
         ],
       ),
     );
@@ -164,10 +173,10 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
 
   Widget _buildWeekDay(String day) {
     Color txtColor = Colors.black;
-    if(day == "Ahad"){
+    if (day == "Ahad") {
       txtColor = Colors.red;
     }
-    if(day == "Jumat"){
+    if (day == "Jumat") {
       txtColor = Colors.green;
     }
     return Padding(
@@ -176,7 +185,8 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
         day,
         style: TextStyle(
           fontWeight: FontWeight.bold,
-          color:txtColor,),
+          color: txtColor,
+        ),
       ),
     );
   }
@@ -185,29 +195,28 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
     Color bgColor = Colors.white;
     Color bdColor = Colors.black;
     final now = DateTime.now();
-    final today = DateTime(now.year,now.month,now.day);
-    final msh = DateTime(masehi.year,masehi.month,masehi.day);
-    if(msh == today){
+    final today = DateTime(now.year, now.month, now.day);
+    final msh = DateTime(masehi.year, masehi.month, masehi.day);
+    if (msh == today) {
       bgColor = Colors.blueAccent;
     }
-    if(tgl == 13|| tgl == 14 || tgl==15){
+    if (tgl == 13 || tgl == 14 || tgl == 15) {
       bgColor = Colors.yellowAccent;
       bdColor = Colors.deepOrange;
     }
-    if(masehi.weekday == 7){
+    if (masehi.weekday == 7) {
       bgColor = Colors.redAccent;
     }
-    if(masehi.weekday == 5){
+    if (masehi.weekday == 5) {
       bgColor = Colors.greenAccent;
     }
-    
 
     return Container(
       margin: const EdgeInsets.all(2),
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: bgColor,
-        border: Border.all(color:bdColor),
+        border: Border.all(color: bdColor),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -242,10 +251,9 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
               child: Text(
                 "$tgl",
                 style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(255, 0, 0, 0)
-                ),
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromARGB(255, 0, 0, 0)),
               ),
             ),
           ),
@@ -254,9 +262,7 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
             // child: Text(psrn),
             child: FittedBox(
               fit: BoxFit.scaleDown,
-              child: Text(
-                psrn
-              ),
+              child: Text(psrn),
             ),
           ),
         ],
@@ -266,12 +272,12 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
 
   Widget _calGrid(int hijriMonth, int yearCh) {
     int weekdayOfFirstDay = _currentMonth.wkDay;
-     if (weekdayOfFirstDay == 7) {
+    if (weekdayOfFirstDay == 7) {
       weekdayOfFirstDay = 0;
     }
-    int totalCells = _currentMonth.lengthOfMonth + weekdayOfFirstDay ;
+    int totalCells = _currentMonth.lengthOfMonth + weekdayOfFirstDay;
     String myPsrn = _currentMonth.nmPasaran;
-    
+
     int rows = (totalCells / 7).ceil();
     int itemCount = rows * 7;
 
@@ -283,13 +289,16 @@ class _CalendarKHGTState extends State<CalendarKHGT> {
       ),
       itemCount: itemCount,
       itemBuilder: (context, index) {
-        if (index < weekdayOfFirstDay || index >= _currentMonth.lengthOfMonth + weekdayOfFirstDay ) {
+        if (index < weekdayOfFirstDay ||
+            index >= _currentMonth.lengthOfMonth + weekdayOfFirstDay) {
           return const SizedBox.shrink();
         }
         return _dayCell(
           index - weekdayOfFirstDay + 1,
           getPasaranOffset(index - weekdayOfFirstDay, myPsrn),
-          getMasehi(_currentMonth.hYear,_currentMonth.hMonth,_currentMonth.hDay).add(Duration(days: index - weekdayOfFirstDay)),
+          getMasehi(
+                  _currentMonth.hYear, _currentMonth.hMonth, _currentMonth.hDay)
+              .add(Duration(days: index - weekdayOfFirstDay)),
         );
       },
     );

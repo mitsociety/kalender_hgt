@@ -17,7 +17,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'KHGT Calendar',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 14, 138, 21)),
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color.fromARGB(255, 14, 138, 21)),
         useMaterial3: true,
       ),
       home: const MyHomePage(title: 'Kalender Hijriyah Global Tunggal'),
@@ -52,7 +53,6 @@ run on desktop and mobile
 */
 
 class _MyHomePageState extends State<MyHomePage> {
- 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,7 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
 //left side widget
-Widget _leftSideBox(BoxConstraints constraints) {
+  Widget _leftSideBox(BoxConstraints constraints) {
     return Container(
       color: Colors.green,
       child: Column(
@@ -104,24 +104,21 @@ Widget _leftSideBox(BoxConstraints constraints) {
           ),
           Expanded(
             flex: 5,
-            child: Imsakiyah(),//Container(color: Colors.green[900]),
+            child: Imsakiyah(), //Container(color: Colors.green[900]),
           ),
           Expanded(
-            flex: 1,
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: _leftSideFooter(),
-            )
-            
-          )
+              flex: 1,
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: _leftSideFooter(),
+              ))
         ],
       ),
     );
   }
 
-
-//right side widget 
-Widget _calendarKHGT() {
+//right side widget
+  Widget _calendarKHGT() {
     return Container(
       color: const Color.fromARGB(255, 255, 255, 255),
       child: Column(
@@ -130,45 +127,41 @@ Widget _calendarKHGT() {
             flex: 8,
             child: CalendarKHGT(),
           ),
-          
         ],
-        
       ),
     );
   }
 
-  Widget _leftSideFooter(){
+  Widget _leftSideFooter() {
     return Container(
-      color: Colors.deepOrange,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Text(
-              "Presented by :",
-              style: TextStyle(
-                fontSize: 14, // Increased from 9
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.right,
-            ),
-          ),
-          SizedBox(width: 10,),
-          Expanded(
-            child: Text(
-              "MITSociety",
-              style: TextStyle(
-                fontSize: 16, // Increased from 10
-                fontWeight: FontWeight.bold,
+        color: Colors.deepOrange,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Text(
+                "Presented by :",
+                style: TextStyle(
+                  fontSize: 14, // Increased from 9
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.right,
               ),
             ),
-          ),
-        ],
-      ) 
-  );
+            SizedBox(
+              width: 10,
+            ),
+            Expanded(
+              child: Text(
+                "MITSociety",
+                style: TextStyle(
+                  fontSize: 16, // Increased from 10
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ));
+  }
 }
-
-  
-}
-

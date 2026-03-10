@@ -13,7 +13,8 @@ class PrayerTimeService {
 
   PrayerTimeService({required this.apiUrl});
 
-  Future<Map<String, dynamic>?> getPrayerSchedule(double lat, double lng) async {
+  Future<Map<String, dynamic>?> getPrayerSchedule(
+      double lat, double lng) async {
     final today = DateTime.now();
     final prefs = await SharedPreferences.getInstance();
     final cachedMonth = prefs.getInt(_cacheMonthKey);
@@ -56,7 +57,8 @@ class PrayerTimeService {
     throw Exception('Failed to fetch API data');
   }
 
-  bool _hasValidCache(DateTime today, int? cachedMonth, SharedPreferences prefs) {
+  bool _hasValidCache(
+      DateTime today, int? cachedMonth, SharedPreferences prefs) {
     final hasCache = prefs.containsKey(_cacheKey);
     return hasCache && cachedMonth == today.month;
   }
@@ -81,8 +83,10 @@ class PrayerTimeService {
     }
   }
 
-  Future<tz.TZDateTime> nowWithResolvedLocation({String? ianaTimezone, int? offset}) async {
-    final location = resolveLocation(ianaTimezone: ianaTimezone, offset: offset);
+  Future<tz.TZDateTime> nowWithResolvedLocation(
+      {String? ianaTimezone, int? offset}) async {
+    final location =
+        resolveLocation(ianaTimezone: ianaTimezone, offset: offset);
     return tz.TZDateTime.now(location);
   }
 
@@ -127,12 +131,14 @@ class PrayerTimeService {
     final cachedJson = prefs.getString(_cacheKey);
     final ianaTimezone = await getCachedIanaTimezone();
     final tzOffset = prefs.getInt('cached_tz');
-    final location = resolveLocation(ianaTimezone: ianaTimezone, offset: tzOffset);
+    final location =
+        resolveLocation(ianaTimezone: ianaTimezone, offset: tzOffset);
 
     if (cachedJson != null) {
       final data = jsonDecode(cachedJson);
       final today = DateTime.now();
-      final dateStr = "${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}";
+      final dateStr =
+          "${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}";
 
       final daily = (data['data'] as List?)?.firstWhere(
         (e) => e['tanggal'] == dateStr,
@@ -140,20 +146,20 @@ class PrayerTimeService {
       );
 
       if (daily != null && daily['jadwal'] != null) {
-        return convertTimesToLocal(daily['jadwal'] as Map<String, dynamic>, location);
+        return convertTimesToLocal(
+            daily['jadwal'] as Map<String, dynamic>, location);
       }
     }
     return null;
   }
 
   Map<String, dynamic> convertTimesToLocal(
-    Map<String, dynamic> times, 
-    tz.Location location
-  ) {
+      Map<String, dynamic> times, tz.Location location) {
     final now = tz.TZDateTime.now(location);
     return times.map((key, value) {
       final time = DateFormat.Hm().parse(value);
-      final dt = tz.TZDateTime(location, now.year, now.month, now.day, time.hour, time.minute);
+      final dt = tz.TZDateTime(
+          location, now.year, now.month, now.day, time.hour, time.minute);
       return MapEntry(key, DateFormat.Hms().format(dt));
     });
   }
@@ -185,7 +191,7 @@ class PrayerTimeService {
   Future<DateTime> getNextPrayerTime() async {
     final name = await getNextPrayerName();
     final times = await getTodayPrayerTimes();
-    
+
     if (times == null || times[name] == null) {
       return DateTime.now().add(Duration(hours: 1));
     }
