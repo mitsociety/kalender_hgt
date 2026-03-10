@@ -2,7 +2,7 @@
 
 Kalender hijriyah dan Imsakiyah untuk berbagai lokasi di Indonesia
 
-![screenshot khgt on windows](lib\screenshot\khgt_on_windows_1.png)
+![screenshot khgt on windows](./lib/screenshot/khgt_on_windows_1.png)
 
 ## Fitur 
 - [x] Kalender Hijriyah dan Nama Pasaran
